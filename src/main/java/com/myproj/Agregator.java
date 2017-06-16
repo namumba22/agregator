@@ -67,6 +67,7 @@ class DiscountMatrix {
 class Tax {
 
     // TODO: unusefull amount
+    @SuppressWarnings("unusefull amount")
     double getValue(double amount) {
         return MultipleDevide.getInstance().devideAndGet(20,100);
     }
@@ -123,7 +124,7 @@ class CurrencyRounder {
     static CurrencyRounder currencyRounder;
 
     double round(double a) {
-        BigDecimal v = new BigDecimal(a);
+        BigDecimal v = BigDecimal.valueOf(a);
         BigDecimal roundOff = v.setScale(2, BigDecimal.ROUND_HALF_EVEN);
         return  roundOff.doubleValue();
     }
