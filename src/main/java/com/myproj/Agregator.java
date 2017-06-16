@@ -1,25 +1,33 @@
-package com.myproj.kafka;
+package com.myproj;
 
 public class Agregator {
 
+    static Agregator agregator;
+    static Agregator getInstance() {
+        if (agregator == null) {
+            agregator = new Agregator();
+        }
+        return agregator;
+    }
 
     public double calculateWOtax(double price, double quantity) {
-        return MultipleDevide.getInstance().multipleAndGet(price, quantity);
+        return CurrencyRounder.getInstance().round(MultipleDevide.getInstance().multipleAndGet(price, quantity));
     }
 
     public double calculateTax(double price, double quantity) {
-        return MultipleDevide.getInstance().multipleAndGet(price, quantity);
+        double woTax = calculateWOtax(price, quantity);
+        return CurrencyRounder.getInstance().round(MultipleDevide.getInstance().multipleAndGet(woTax, Tax.getInstance().getValue(woTax)));
     }
 
     public double calculateDiscount(double amount) {
-        return MultipleDevide.getInstance().devideAndGet(amount,DiscountMatrix.getInstance().getValue(amount));
+        return CurrencyRounder.getInstance().round(MultipleDevide.getInstance().devideAndGet(amount,DiscountMatrix.getInstance().getValue(amount)));
     }
 
     public double calculateTotalWithDiscount(double price, double quantity) {
-        double woTax = calculateWOtax(price, quantity);
-        double tax = calculateTax(price, quantity);
-        double discount = calculateDiscount(woTax);
-        double amountWOdiscount = PlusMines.getInstance().minuAndGet(woTax,discount);
+        double woTax = CurrencyRounder.getInstance().round(calculateWOtax(price, quantity));
+        double tax = CurrencyRounder.getInstance().round(calculateTax(price, quantity));
+        double discount = CurrencyRounder.getInstance().round(calculateDiscount(woTax));
+        double amountWOdiscount = CurrencyRounder.getInstance().round(PlusMines.getInstance().minuAndGet(woTax,discount));
 
         return PlusMines.getInstance().plusAndGet(amountWOdiscount, tax );
     }
@@ -28,7 +36,6 @@ public class Agregator {
 }
 
 class DiscountMatrix {
-    static DiscountMatrix discountMatrix;
 
     double getValue(double amount) {
         double retVal;
@@ -46,11 +53,28 @@ class DiscountMatrix {
         return retVal;
     }
 
+    static DiscountMatrix discountMatrix;
     static DiscountMatrix getInstance() {
         if (discountMatrix == null) {
             discountMatrix = new DiscountMatrix();
         }
         return discountMatrix;
+    }
+}
+
+class Tax {
+
+    // TODO: unusefull amount
+    double getValue(double amount) {
+        return MultipleDevide.getInstance().devideAndGet(20,100);
+    }
+
+    static Tax tax;
+    static Tax getInstance() {
+        if (tax == null) {
+            tax = new Tax();
+        }
+        return tax;
     }
 }
 
@@ -90,6 +114,21 @@ class PlusMines {
             plusMines = new PlusMines();
         }
         return plusMines;
+    }
+}
+
+class CurrencyRounder {
+    static CurrencyRounder currencyRounder;
+
+    double round(double a) {
+        return  Math.round(a * 100.0) / 100.0;
+    }
+
+    static CurrencyRounder getInstance() {
+        if (currencyRounder == null) {
+            currencyRounder = new CurrencyRounder();
+        }
+        return currencyRounder;
     }
 }
 
