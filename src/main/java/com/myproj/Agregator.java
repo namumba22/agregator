@@ -1,5 +1,7 @@
 package com.myproj;
 
+import java.math.BigDecimal;
+
 public class Agregator {
 
     static Agregator agregator;
@@ -121,7 +123,9 @@ class CurrencyRounder {
     static CurrencyRounder currencyRounder;
 
     double round(double a) {
-        return  Math.round(a * 100.0) / 100.0;
+        BigDecimal v = new BigDecimal(a);
+        BigDecimal roundOff = v.setScale(2, BigDecimal.ROUND_HALF_EVEN);
+        return  roundOff.doubleValue();
     }
 
     static CurrencyRounder getInstance() {
